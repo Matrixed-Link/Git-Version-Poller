@@ -5,11 +5,6 @@
     "nethermind": "NethermindEth/nethermind",
     "bsc": "bnb-chain/bsc",
     "heimdall": "maticnetwork/heimdall",
-    "acred": "ArableProtocol/acrechain",
-    "injectived": "InjectiveLabs/injective-chain-releases",
-    "gaiad": "cosmos/gaia",
-    "defundd": "defund-labs/defund",
     "lighthouse": "sigp/lighthouse",
-    "prysm": "prysmaticlabs/prysm",
-    "hermes-IBC": "informalsystems/hermes"
+    "prysm": "prysmaticlabs/prysm"
 }

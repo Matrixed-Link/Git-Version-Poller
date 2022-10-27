@@ -12,7 +12,7 @@ const { sendDiscAlert } = require('./utils/sendDiscAlert');
 dotenv.config()
 gitUser = process.env.GIT_USER
 gitToken = process.env.GIT_TOKEN
-pollTime = process.env.POLL_TIME * 60000
+pollTime = process.env.POLL_TIME * 60000 || 600000
 TG_ENABLED = process.env.TG_ENABLED || false
 DISC_ENABLED = process.env.DISC_ENABLED || false
 
@@ -33,8 +33,8 @@ if (Object.keys(repositories).length === 0) {
 console.log(ts(), `Loaded ${Object.keys(repositories).length} repositories.`)
 
 // Loop function
+global.tags = {}
 async function loop() {
-    global.tags = {}
     console.log(ts(), `Initiate poll round.`)
     for (x in repositories) {
         await pullVersion(x, repositories[x]).catch(() => {

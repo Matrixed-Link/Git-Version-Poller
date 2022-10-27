@@ -1,0 +1,13 @@
+[Unit]
+Description=Github repo version poller.
+
+[Service]
+WorkingDirectory=~/Git-Version-Poller
+ExecStart=npm run start
+Type=simple
+Restart=always
+RestartSec=5
+User=root
+
+[Install]
+WantedBy=multi-user.target
