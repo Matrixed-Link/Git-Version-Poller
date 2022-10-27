@@ -1,5 +1,5 @@
-function ts() {
+function ts(level) {
     const timestamp = new Date().toISOString();
-    return timestamp + ' |';
+    return timestamp + ` [${level}]`;
 }
 exports.ts = ts;

@@ -9,7 +9,7 @@ function sendDiscAlert(message) {
          headers: {
              "Content-Type": "application/json"
          },
-         body: JSON.stringify({"username": "Github Release Alerter", "content": `${message}`})
+         body: JSON.stringify({"username": "Github Release Alerter", "content": `**RELEASE ALERT:**\n\`\`\`${message}\`\`\``})
      });
  }
 
