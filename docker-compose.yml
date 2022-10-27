@@ -1,0 +1,19 @@
+version: '3'
+services:
+  app:
+      build:
+        context: .
+      container_name: github-version-poller
+      restart: always
+      environment:
+        GIT_USER: ${GIT_USER}
+        GIT_TOKEN: ${GIT_TOKEN}
+        TG_ENABLED: ${TG_ENABLED}
+        TELEGRAM_KEY: ${TELEGRAM_KEY}
+        TELEGRAM_ID: ${TELEGRAM_ID}
+        DISC_ENABLED: ${DISC_ENABLED}
+        DISC_WEBHOOK: ${DISC_WEBHOOK}
+        SLACK_ENABLED: ${SLACK_ENABLED}
+        SLACK_WEBHOOK: ${SLACK_WEBHOOK}
+        POLL_TIME: ${POLL_TIME}
+      command: npm run start
