@@ -17,7 +17,7 @@ const DISC_ENABLED = process.env.DISC_ENABLED || false
 
 // Log start message.
 console.log(ts('INFO'), 'Starting Github version poller.')
-console.log(ts('INFO'), `Poll time set to: ${pollTime / 60000} minute(s). \n` + ts('INFO'),`Telegram alerts enabled: ${TG_ENABLED}\n` + ts('INFO'),`Discord alerts enabled: ${DISC_ENABLED}`)
+console.log(ts('INFO'), `Poll time set to: ${pollTime / 60000} minute(s). \n` + ts('INFO'), `Telegram alerts enabled: ${TG_ENABLED}\n` + ts('INFO'), `Discord alerts enabled: ${DISC_ENABLED}`)
 
 // Check for required parameters.
 if (DISC_ENABLED) {
@@ -35,10 +35,8 @@ if (TG_ENABLED) {
 }
 
 // Warn for no alerts set.
-if (DISC_ENABLED === 'false') {
-    if (TG_ENABLED === 'false') {
-        console.log(ts('WARN'), `Both telegram & discord alerting disabled. Only writing alerts to log.`)
-    }
+if (DISC_ENABLED === 'false' && TG_ENABLED === 'false') {
+    console.log(ts('WARN'), `Both telegram & discord alerting disabled. Only writing alerts to log.`)
 }
 
 // Load repo's from repository file.
