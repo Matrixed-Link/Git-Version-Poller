@@ -82,7 +82,7 @@ async function pullVersion(repoName, repoPath) {
             tag = r[1]
         if (tags[repoName] === undefined) {
             tags[repoName] = tag
-            console.log(ts('WARN'), `No old version detected for ${repoName}`)
+            console.log(ts('INFO'), `Set current tag to ${tag} for ${repoName}.`)
         } else {
             let old_tag = tags[repoName]
             if (old_tag != tag) {
