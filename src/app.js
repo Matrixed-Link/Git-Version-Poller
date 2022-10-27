@@ -34,7 +34,7 @@ if (Object.keys(repositories).length === 0) {
 }
 console.log(ts(), `Loaded ${Object.keys(repositories).length} repositories.`)
 
-// Load current versions.
+// Loop function
 async function loop() {
     global.tags = {}
     console.log(ts(), `Initiate poll round.`)
@@ -46,6 +46,7 @@ async function loop() {
     }, pollTime)
 }
 
+// Tag fetcher.
 async function pullVersion(repoName, repoPath) {
     const requestUrl = 'https://' + gitUser + ':' + gitToken + '@api.github.com/repos/' + repoPath + '/releases'
     await request({ url: requestUrl, json: true, headers: { 'User-Agent': 'My version poller' } }, function (error, response, data) {
@@ -55,11 +56,6 @@ async function pullVersion(repoName, repoPath) {
         var r = tag.match(re);
         if (r)
             tag = r[1]
-        software = url.split('/')[5]
-        // Overides
-        if (software === 'go-ethereum') {
-            software = 'geth'
-        }
         if (tags[repoName] === undefined) {
             tags[repoName] = tag
             console.log(ts(), `No old version detected for ${repoName}`)
