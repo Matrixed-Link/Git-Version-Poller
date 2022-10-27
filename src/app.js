@@ -47,17 +47,14 @@ async function loop() {
 }
 
 async function pullVersion(repoName, repoPath) {
-    // console.log(ts(), `Retrieving version for ${repoName}.`)
     const requestUrl = 'https://' + gitUser + ':' + gitToken + '@api.github.com/repos/' + repoPath + '/releases'
     await request({ url: requestUrl, json: true, headers: { 'User-Agent': 'My version poller' } }, function (error, response, data) {
-        // console.log(data,response.body)
         url = data[0].url
         tag = data[0].tag_name;
         var re = new RegExp("([0-9]+(\.[0-9]+)+)");
         var r = tag.match(re);
         if (r)
             tag = r[1]
-        //console.log(r)
         software = url.split('/')[5]
         // Overides
         if (software === 'go-ethereum') {
