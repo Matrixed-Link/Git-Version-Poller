@@ -6,6 +6,7 @@ const dotenv = require("dotenv");
 const { ts } = require('./utils/ts')
 const { sendTgAlert } = require('./utils/sendTgAlert');
 const { sendDiscAlert } = require('./utils/sendDiscAlert');
+const { sendSlackAlert } = require('./utils/sendSlackAlert');
 
 // Load enviroment file.
 dotenv.config()
@@ -14,29 +15,37 @@ const gitToken = process.env.GIT_TOKEN
 const pollTime = process.env.POLL_TIME * 60000 || 600000
 const TG_ENABLED = process.env.TG_ENABLED || false
 const DISC_ENABLED = process.env.DISC_ENABLED || false
+const SLACK_ENABLED = process.env.SLACK_ENABLED || false
 
 // Log start message.
 console.log(ts('INFO'), 'Starting Github version poller.')
-console.log(ts('INFO'), `Poll time set to: ${pollTime / 60000} minute(s). \n` + ts('INFO'), `Telegram alerts enabled: ${TG_ENABLED}\n` + ts('INFO'), `Discord alerts enabled: ${DISC_ENABLED}`)
+console.log(ts('INFO'), `Poll time set to: ${pollTime / 60000} minute(s). \n` + ts('INFO'), `Telegram alerts enabled: ${TG_ENABLED}\n` + ts('INFO'), `Discord alerts enabled: ${DISC_ENABLED}\n` + ts('INFO'), `Slack alerts enabled: ${SLACK_ENABLED}`)
 
 // Check for required parameters.
-if (DISC_ENABLED) {
+if (DISC_ENABLED === 'true') {
     if (!process.env.DISC_WEBHOOK) {
         console.log(ts('ERROR'), `No discord webhook provided in enviroment file.\n${ts('WARN')} Disabling discord alerts.`)
         DISC_ENABLED = false
     }
 }
 
-if (TG_ENABLED) {
+if (TG_ENABLED === 'true') {
     if (!process.env.TELEGRAM_KEY || !process.env.TELEGRAM_ID) {
         console.log(ts('ERROR'), `Not all required telegram parameters provided in enviroment file.\n${ts('WARN')} Disabling telegram alerts.`)
         TG_ENABLED = false
     }
 }
 
+if (SLACK_ENABLED === 'true') {
+    if (!process.env.SLACK_WEBHOOK) {
+        console.log(ts('ERROR'), `No slack webhook provided in enviroment file.\n${ts('WARN')} Disabling slack alerts.`)
+        SLACK_ENABLED = false
+    }
+}
+
 // Warn for no alerts set.
-if (DISC_ENABLED === 'false' && TG_ENABLED === 'false') {
-    console.log(ts('WARN'), `Both telegram & discord alerting disabled. Only writing alerts to log.`)
+if (DISC_ENABLED === 'false' && TG_ENABLED === 'false' && SLACK_ENABLED === 'false') {
+    console.log(ts('WARN'), `Telegram, slack & discord alerting disabled. Only writing alerts to log.`)
 }
 
 // Load repo's from repository file.
@@ -73,6 +82,9 @@ async function pullVersion(repoName, repoPath) {
                 }
                 if (DISC_ENABLED === 'true') {
                     sendDiscAlert(message)
+                }
+                if (SLACK_ENABLED === 'true') {
+                    sendSlackAlert(message)
                 }
                 console.log(ts('INFO'), `Set updated tag to ${tag} for ${repoName}.`)
             }
