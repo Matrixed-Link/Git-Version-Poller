@@ -1,16 +1,14 @@
 // Import dependencies.
 const request = require('request')
 const fs = require('fs');
+const dotenv = require("dotenv");
 
 // Import utils.
 const { ts } = require('./utils/ts')
 const { sendTgAlert } = require('./utils/sendTgAlert');
 const { sendDiscAlert } = require('./utils/sendDiscAlert');
 
-const { versions: tags } = require('process');
-
 // Load enviroment file
-const dotenv = require("dotenv");
 dotenv.config()
 gitUser = process.env.GIT_USER
 gitToken = process.env.GIT_TOKEN
@@ -39,7 +37,9 @@ async function loop() {
     global.tags = {}
     console.log(ts(), `Initiate poll round.`)
     for (x in repositories) {
-        await pullVersion(x, repositories[x])
+        await pullVersion(x, repositories[x]).catch(() => {
+            console.log(ts(),`Error while running fetcher for ${x}.`)
+        })
     }
     setTimeout(() => {
         loop()
@@ -77,4 +77,7 @@ async function pullVersion(repoName, repoPath) {
 }
 
 // Run loop.
-loop()
+loop().catch(() => {
+    console.log(ts(),`Error occured while running poll loop, restarting.`)
+    loop()
+})
