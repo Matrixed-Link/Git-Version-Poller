@@ -2,7 +2,7 @@
 Description=Github repo version poller.
 
 [Service]
-WorkingDirectory=~/Git-Version-Poller
+WorkingDirectory=/root/git-version-poller
 ExecStart=npm run start
 Type=simple
 Restart=always
