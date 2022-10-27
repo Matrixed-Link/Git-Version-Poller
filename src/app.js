@@ -94,6 +94,7 @@ async function pullVersion(repoName, repoPath) {
                 if (DISC_ENABLED === 'true') {
                      sendDiscAlert(message)
                 }
+                console.log(ts('INFO'), `Set current tag to ${tag} for ${repoName}.`)
             }
             tags[repoName] = tag
         }
