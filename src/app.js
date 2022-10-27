@@ -1,14 +1,11 @@
 // Import dependencies.
 const request = require('request')
-const fs = require('fs');
 const dotenv = require("dotenv");
 
 // Import utils.
 const { ts } = require('./utils/ts')
 const { sendTgAlert } = require('./utils/sendTgAlert');
 const { sendDiscAlert } = require('./utils/sendDiscAlert');
-
-
 
 // Load enviroment file.
 dotenv.config()
@@ -20,7 +17,7 @@ const DISC_ENABLED = process.env.DISC_ENABLED || false
 
 // Log start message.
 console.log(ts('INFO'), 'Starting Github version poller.')
-console.log(ts('INFO'), `Poll time set to: ${pollTime / 60000} minute(s). \n` + ts('INFO') + ` Telegram alerts enabled: ${TG_ENABLED}\n` + ts('INFO') + ` Discord alerts enabled: ${DISC_ENABLED}`)
+console.log(ts('INFO'), `Poll time set to: ${pollTime / 60000} minute(s). \n` + ts('INFO'),`Telegram alerts enabled: ${TG_ENABLED}\n` + ts('INFO'),`Discord alerts enabled: ${DISC_ENABLED}`)
 
 // Check for required parameters.
 if (DISC_ENABLED) {
@@ -56,6 +53,36 @@ if (Object.keys(repositories).length === 0) {
 }
 console.log(ts('INFO'), `Loaded ${Object.keys(repositories).length} repositories.`)
 
+// Tag fetcher.
+async function pullVersion(repoName, repoPath) {
+    const requestUrl = 'https://' + gitUser + ':' + gitToken + '@api.github.com/repos/' + repoPath + '/releases'
+    await request({ url: requestUrl, json: true, headers: { 'User-Agent': 'My version poller' } }, function (error, response, data) {
+        url = data[0].url
+        tag = data[0].tag_name;
+        var re = new RegExp("([0-9]+(\.[0-9]+)+)");
+        var r = tag.match(re);
+        if (r)
+            tag = r[1]
+        if (tags[repoName] === undefined) {
+            console.log(ts('INFO'), `Set current tag to ${tag} for ${repoName}.`)
+        } else {
+            let old_tag = tags[repoName]
+            if (old_tag != tag) {
+                message = `New release detected for ${repoName}.\nOld version: ${old_tag}\nNew version: ${tag}\nRepository url: https://github.com/${repoPath}`
+                console.log(ts('ALERT'), message)
+                if (TG_ENABLED === 'true') {
+                    sendTgAlert(message)
+                }
+                if (DISC_ENABLED === 'true') {
+                    sendDiscAlert(message)
+                }
+                console.log(ts('INFO'), `Set updated tag to ${tag} for ${repoName}.`)
+            }
+        }
+        tags[repoName] = tag
+    });
+}
+
 // Loop function
 global.tags = {}
 async function loop() {
@@ -68,37 +95,6 @@ async function loop() {
     setTimeout(() => {
         loop()
     }, pollTime)
-}
-
-// Tag fetcher.
-async function pullVersion(repoName, repoPath) {
-    const requestUrl = 'https://' + gitUser + ':' + gitToken + '@api.github.com/repos/' + repoPath + '/releases'
-    await request({ url: requestUrl, json: true, headers: { 'User-Agent': 'My version poller' } }, function (error, response, data) {
-        url = data[0].url
-        tag = data[0].tag_name;
-        var re = new RegExp("([0-9]+(\.[0-9]+)+)");
-        var r = tag.match(re);
-        if (r)
-            tag = r[1]
-        if (tags[repoName] === undefined) {
-            tags[repoName] = tag
-            console.log(ts('INFO'), `Set current tag to ${tag} for ${repoName}.`)
-        } else {
-            let old_tag = tags[repoName]
-            if (old_tag != tag) {
-                message = `New release detected for ${repoName}.\nOld version: ${old_tag}\nNew version: ${tag}\nRepository url: https://github.com/${repoPath}`
-                console.log(ts('ALERT'),message)
-                if (TG_ENABLED === 'true') {
-                    sendTgAlert(message)
-                }
-                if (DISC_ENABLED === 'true') {
-                     sendDiscAlert(message)
-                }
-                console.log(ts('INFO'), `Set updated tag to ${tag} for ${repoName}.`)
-            }
-            tags[repoName] = tag
-        }
-    });
 }
 
 // Run loop.
