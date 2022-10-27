@@ -5,10 +5,12 @@ const fs = require('fs');
 // Import utils.
 const { ts } = require('./utils/ts')
 const { sendTgAlert } = require('./utils/sendTgAlert');
+const { sendDiscAlert } = require('./utils/sendDiscAlert');
+
 const { versions: tags } = require('process');
 
 // Load enviroment file
-const dotenv = require("dotenv")
+const dotenv = require("dotenv");
 dotenv.config()
 gitUser = process.env.GIT_USER
 gitToken = process.env.GIT_TOKEN
@@ -71,6 +73,9 @@ async function pullVersion(repoName, repoPath) {
                 console.log(message)
                 if (TG_ENABLED === true) {
                     sendTgAlert(message)
+                }
+                if (DISC_ENABLED === true) {
+                    sendDiscAlert(message)
                 }
             }
             tags[repoName] = tag
