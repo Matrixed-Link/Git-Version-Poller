@@ -13,30 +13,30 @@ dotenv.config()
 const gitUser = process.env.GIT_USER
 const gitToken = process.env.GIT_TOKEN
 const pollTime = process.env.POLL_TIME * 60000 || 600000
-const TG_ENABLED = process.env.TG_ENABLED || false
-const DISC_ENABLED = process.env.DISC_ENABLED || false
-const SLACK_ENABLED = process.env.SLACK_ENABLED || false
+const TG_ENABLED = JSON.parse(process.env.TG_ENABLED) || false
+const DISC_ENABLED = JSON.parse(process.env.DISC_ENABLED) || false
+const SLACK_ENABLED = JSON.parse(process.env.SLACK_ENABLED) || false
 
 // Log start message.
 console.log(ts('INFO'), 'Starting Github version poller.')
 console.log(ts('INFO'), `Poll time set to: ${pollTime / 60000} minute(s). \n` + ts('INFO'), `Telegram alerts enabled: ${TG_ENABLED}\n` + ts('INFO'), `Discord alerts enabled: ${DISC_ENABLED}\n` + ts('INFO'), `Slack alerts enabled: ${SLACK_ENABLED}`)
 
 // Check for required parameters.
-if (DISC_ENABLED === 'true') {
+if (DISC_ENABLED) {
     if (!process.env.DISC_WEBHOOK) {
         console.log(ts('ERROR'), `No discord webhook provided in enviroment file.\n${ts('WARN')} Disabling discord alerts.`)
         DISC_ENABLED = false
     }
 }
 
-if (TG_ENABLED === 'true') {
+if (TG_ENABLED) {
     if (!process.env.TELEGRAM_KEY || !process.env.TELEGRAM_ID) {
         console.log(ts('ERROR'), `Not all required telegram parameters provided in enviroment file.\n${ts('WARN')} Disabling telegram alerts.`)
         TG_ENABLED = false
     }
 }
 
-if (SLACK_ENABLED === 'true') {
+if (SLACK_ENABLED) {
     if (!process.env.SLACK_WEBHOOK) {
         console.log(ts('ERROR'), `No slack webhook provided in enviroment file.\n${ts('WARN')} Disabling slack alerts.`)
         SLACK_ENABLED = false
@@ -44,7 +44,7 @@ if (SLACK_ENABLED === 'true') {
 }
 
 // Warn for no alerts set.
-if (DISC_ENABLED === 'false' && TG_ENABLED === 'false' && SLACK_ENABLED === 'false') {
+if (!DISC_ENABLED && !TG_ENABLED && !SLACK_ENABLED) {
     console.log(ts('WARN'), `Telegram, slack & discord alerting disabled. Only writing alerts to log.`)
 }
 
@@ -79,20 +79,20 @@ async function pullVersion(repoName, repoPath) {
         if (tag.includes('-')) {
             tag = tag.split('-')[0]
         }
-        if (tags[repoName] === undefined) {
+        if (tags[repoName] == undefined) {
             console.log(ts('INFO'), `Set current tag to ${tag} for ${repoName}.`)
         } else {
             let old_tag = tags[repoName]
             if (old_tag != tag) {
                 message = `New release detected for ${repoName}.\nOld version: ${old_tag}\nNew version: ${tag}\nRepository url: https://github.com/${repoPath}`
                 console.log(ts('ALERT'), message)
-                if (TG_ENABLED === 'true') {
+                if (TG_ENABLED) {
                     sendTgAlert(message)
                 }
-                if (DISC_ENABLED === 'true') {
+                if (DISC_ENABLED) {
                     sendDiscAlert(message)
                 }
-                if (SLACK_ENABLED === 'true') {
+                if (SLACK_ENABLED) {
                     sendSlackAlert(message)
                 }
                 console.log(ts('INFO'), `Set updated tag to ${tag} for ${repoName}.`)
