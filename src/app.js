@@ -75,6 +75,10 @@ async function pullVersion(repoName, repoPath) {
         var r = tag.match(re);
         if (r)
             tag = r[1]
+        // Remove trailing data from version number.
+        if (tag.includes('-')) {
+            tag = tag.split('-')[0]
+        }
         if (tags[repoName] === undefined) {
             console.log(ts('INFO'), `Set current tag to ${tag} for ${repoName}.`)
         } else {
