@@ -64,8 +64,13 @@ console.log(ts('INFO'), `Loaded ${Object.keys(repositories).length} repositories
 async function pullVersion(repoName, repoPath) {
     const requestUrl = 'https://' + gitUser + ':' + gitToken + '@api.github.com/repos/' + repoPath + '/releases'
     await request({ url: requestUrl, json: true, headers: { 'User-Agent': 'My version poller' } }, function (error, response, data) {
-        url = data[0].url
-        tag = data[0].tag_name;
+        // Skip pre-releases.
+        for (x in data) {
+            if (!data[x].prerelease) {
+                break
+            }
+        }
+        tag = data[x].tag_name;
         var re = new RegExp("([0-9]+(\.[0-9]+)+)");
         var r = tag.match(re);
         if (r)
