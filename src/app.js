@@ -85,7 +85,17 @@ async function pullVersion(repoName, repoPath) {
         } else {
             let old_tag = tags[repoName]
             if (old_tag != tag) {
-                message = `New release detected for ${repoName}.\nOld version: ${old_tag}\nNew version: ${tag}\nRelease url: https://github.com/${repoPath}/releases/tag/${original_tag}`
+                var number = {}
+                number.old = old_tag.split('.')
+                number.new = tag.split('.')
+                for (x in number.new) {
+                    console.log(number.new[x], number.old[x])
+                    if (number.new[x] > number.old[x]) {
+                        message = `New release detected for ${repoName}.\nOld version: v${old_tag}\nNew version: v${tag}\nRelease url: https://github.com/${repoPath}/releases/tag/${original_tag}`
+                    } else if (number.new[x] < number.old[x]) {
+                        message = `Detected release removal for ${repoName}.\nOld version: v${old_tag}\nNew version: v${tag}\nRelease url: https://github.com/${repoPath}/releases/tag/${original_tag}`
+                    }
+                }
                 console.log(ts('ALERT'), message)
                 if (TG_ENABLED) {
                     sendTgAlert(message)
