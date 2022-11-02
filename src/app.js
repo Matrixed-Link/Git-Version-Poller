@@ -71,6 +71,7 @@ async function pullVersion(repoName, repoPath) {
             }
         }
         tag = data[x].tag_name;
+        original_tag = tag
         var re = new RegExp("([0-9]+(\.[0-9]+)+)");
         var r = tag.match(re);
         if (r)
@@ -80,11 +81,11 @@ async function pullVersion(repoName, repoPath) {
             tag = tag.split('-')[0]
         }
         if (tags[repoName] == undefined) {
-            console.log(ts('INFO'), `Set current tag to ${tag} for ${repoName}.`)
+            console.log(ts('INFO'), `Set current tag to ${tag} for ${repoName}. Release url: https://github.com/${repoPath}/releases/tag/${original_tag}`)
         } else {
             let old_tag = tags[repoName]
             if (old_tag != tag) {
-                message = `New release detected for ${repoName}.\nOld version: ${old_tag}\nNew version: ${tag}\nRepository url: https://github.com/${repoPath}`
+                message = `New release detected for ${repoName}.\nOld version: ${old_tag}\nNew version: ${tag}\nRelease url: https://github.com/${repoPath}/releases/tag/${original_tag}`
                 console.log(ts('ALERT'), message)
                 if (TG_ENABLED) {
                     sendTgAlert(message)
