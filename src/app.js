@@ -91,7 +91,7 @@ async function pullVersion(repoName, repoPath) {
                 for (x in number.new) {
                     console.log(number.new[x], number.old[x])
                     if (number.new[x] > number.old[x]) {
-                        message = `New release detected for ${repoName}.\nOld version: v${old_tag}\nNew version: v${tag}\nRelease url: https://github.com/${repoPath}/releases/tag/${original_tag}`
+                        message = `New release detected for ${repoName}.\nOld version: v${old_tag}\nNew version: v${tag}\nRelease url: https://github.com/${repoPath}/releases/tag/${original_tag}\nDiff: https://github.com/${repoPath}/compare/${data[x+1].tag_name}...${original_tag}`
                     } else if (number.new[x] < number.old[x]) {
                         message = `Detected release removal for ${repoName}.\nOld version: v${old_tag}\nNew version: v${tag}\nRelease url: https://github.com/${repoPath}/releases/tag/${original_tag}`
                     }
