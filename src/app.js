@@ -84,7 +84,6 @@ async function pullVersion(repoName, repoPath) {
             console.log(ts('INFO'), `Set current tag to ${tag} for ${repoName}. Release url: https://github.com/${repoPath}/releases/tag/${original_tag}`)
         } else {
             let old_tag = tags[repoName]
-            old_tag = '0.0.1'
             let original_old_tag = old_tag
             if (original_old_tag != original_tag) {
                 var re = new RegExp("([0-9]+(\.[0-9]+)+)");
