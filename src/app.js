@@ -84,16 +84,24 @@ async function pullVersion(repoName, repoPath) {
             console.log(ts('INFO'), `Set current tag to ${tag} for ${repoName}. Release url: https://github.com/${repoPath}/releases/tag/${original_tag}`)
         } else {
             let old_tag = tags[repoName]
-            if (old_tag != tag) {
-                var number = {}
-                number.old = old_tag.split('.')
-                number.new = tag.split('.')
-                for (x in number.new) {
-                    console.log(number.new[x], number.old[x])
-                    if (number.new[x] > number.old[x]) {
-                        message = `New release detected for ${repoName}.\nOld version: v${old_tag}\nNew version: v${tag}\nRelease url: https://github.com/${repoPath}/releases/tag/${original_tag}\nDiff: https://github.com/${repoPath}/compare/${data[x+1].tag_name}...${original_tag}`
-                    } else if (number.new[x] < number.old[x]) {
+            old_tag = '0.0.1'
+            let original_old_tag = old_tag
+            if (original_old_tag != original_tag) {
+                var re = new RegExp("([0-9]+(\.[0-9]+)+)");
+                var r = old_tag.match(re);
+                if (r)
+                    old_tag = r[1]
+                // Remove trailing data from version number.
+                if (old_tag.includes('-')) {
+                    old_tag = old_tag.split('-')[0]
+                }
+                for (x in old_tag.split('.')) {
+                    if (tag.split('.')[x] > old_tag.split('.')[x]) {
+                        message = `New release detected for ${repoName}.\nOld version: v${old_tag}\nNew version: v${tag}\nRelease url: https://github.com/${repoPath}/releases/tag/${original_tag}\nDiff: https://github.com/${repoPath}/compare/${original_old_tag}...${original_tag}`
+                        break
+                    } else if (tag.split('.')[x] < old_tag.split('.')[x]) {
                         message = `Detected release removal for ${repoName}.\nOld version: v${old_tag}\nNew version: v${tag}\nRelease url: https://github.com/${repoPath}/releases/tag/${original_tag}`
+                        break
                     }
                 }
                 console.log(ts('ALERT'), message)
@@ -109,7 +117,7 @@ async function pullVersion(repoName, repoPath) {
                 console.log(ts('INFO'), `Set updated tag to ${tag} for ${repoName}.`)
             }
         }
-        tags[repoName] = tag
+        tags[repoName] = original_tag
     });
 }
 
