@@ -94,11 +94,19 @@ async function pullVersion(repoName, repoPath) {
                 if (old_tag.includes('-')) {
                     old_tag = old_tag.split('-')[0]
                 }
+                var tags = {}
+                tags['old'] = []
+                tags['new'] = []
                 for (x in old_tag.split('.')) {
-                    if (tag.split('.')[x] > old_tag.split('.')[x]) {
+                    tags.old.push(Number(old_tag.split('.')[x]))
+                    tags.new.push(Number(tag.split('.')[x]))
+                }
+                for (x in tags.old) {
+                    console.log('new',tags.new[x],'old',tags.old[x])
+                    if (tags.new[x] > tags.old[x]) {
                         message = `New release detected for ${repoName}.\nOld version: v${old_tag}\nNew version: v${tag}\nRelease url: https://github.com/${repoPath}/releases/tag/${original_tag}\nDiff: https://github.com/${repoPath}/compare/${original_old_tag}...${original_tag}`
                         break
-                    } else if (tag.split('.')[x] < old_tag.split('.')[x]) {
+                    } else if (tags.new[x] < tags.old[x]) {
                         message = `Detected release removal for ${repoName}.\nOld version: v${old_tag}\nNew version: v${tag}\nRelease url: https://github.com/${repoPath}/releases/tag/${original_tag}`
                         break
                     }
